@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenAgent</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div class="brand"><img src="logo.svg" alt="" /><span>OpenAgent</span></div>
+        <button class="btn-new" type="button" id="newAgentBtn">
+          <span class="ico" aria-hidden="true">+</span>
+          New Agent
+        </button>
+
+        <nav class="nav-list" id="navList">
+          <button class="nav-item" type="button" data-view="search">Search</button>
+          <button class="nav-item" type="button" data-view="workspace">Workspace</button>
+          <button class="nav-item" type="button" data-view="providers">Providers</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="section">
+          <div class="section-head">
+            <span>Projects</span>
+            <button class="icon-quiet" type="button" id="addProjectBtn" title="Add project">+</button>
+          </div>
+          <ul class="repo-list" id="projectList"></ul>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <span>Repositories</span>
+          </div>
+          <ul class="repo-list" id="repoList"></ul>
+        </div>
+      </div>
+
+      <div class="sidebar-foot">
+        <button class="nav-item" type="button" data-view="settings" id="settingsBtn"><svg class="gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
+        <div class="foot-meta">
+          <span id="footMeta">Local · BYOK</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <!-- Home / Composer -->
+      <section class="view active" id="view-home" data-view="home">
+        <div class="agent-home">
+          <div class="context-row">
+            <div class="dropdown" data-dropdown="project">
+              <button class="ctx" type="button" id="ctxProjectBtn">OpenAgent ▾</button>
+              <div class="menu" id="menuProject"></div>
+            </div>
+            <div class="dropdown" data-dropdown="branch">
+              <button class="ctx" type="button" id="ctxBranchBtn">main ▾</button>
+              <div class="menu" id="menuBranch">
+                <button type="button" data-value="main">main</button>
+                <button type="button" data-value="dev">dev</button>
+                <button type="button" data-value="feature/ui">feature/ui</button>
+              </div>
+            </div>
+            <div class="dropdown" data-dropdown="env">
+              <button class="ctx" type="button" id="ctxEnvBtn">Local ▾</button>
+              <div class="menu" id="menuEnv">
+                <button type="button" data-value="Local">Local</button>
+                <button type="button" data-value="Remote">Remote</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="prompt-box">
+            <div class="context-chips" id="contextChips" hidden></div>
+            <textarea
+              class="prompt-input"
+              id="promptInput"
+              rows="3"
+              placeholder="Plan, build, / for commands, @ for context"
+            ></textarea>
+            <div class="prompt-toolbar">
+              <div class="prompt-left">
+                <div class="dropdown" data-dropdown="plus">
+                  <button class="tool-btn" type="button" id="addContextBtn" title="添加" aria-haspopup="menu" aria-expanded="false">+</button>
+                  <div class="menu menu-up menu-icons" id="menuPlus" role="menu">
+                    <button type="button" data-action="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>调用技能</span></button>
+                    <button type="button" data-action="upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span>上传附件</span></button>
+                    <button type="button" data-action="web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>网络搜索</span></button>
+                    <button type="button" data-action="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>引用文件</span></button>
+                    <button type="button" data-action="mcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span>MCP 工具</span></button>
+                  </div>
+                </div>
+                <input type="file" id="fileInput" multiple hidden />
+                <div class="dropdown" data-dropdown="mode">
+                  <button class="mode-btn" type="button" id="modeBtn">Agent ▾</button>
+                  <div class="menu menu-up" id="menuMode">
+                    <button type="button" data-value="Ask">Ask</button>
+                    <button type="button" data-value="Plan">Plan</button>
+                    <button type="button" data-value="Agent">Agent</button>
+                    <button type="button" data-value="Debug">Debug</button>
+                  </div>
+                </div>
+                <button class="mode-btn god-model-btn" type="button" id="godModelBtn" title="GOD Model：强化 AI 能力（不是模型）" aria-pressed="false">
+                  GOD Model
+                </button>
+              </div>
+              <div class="prompt-right">
+                <button class="send-btn" type="button" id="sendBtn">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="main-hint" id="homeHint">OpenAgent · local-first · bring your own model</p>
+      </section>
+
+      <!-- Session stream after Send -->
+      <section class="view" id="view-session" data-view="session">
+        <header class="session-bar">
+          <button class="text-btn" type="button" id="backHomeBtn">← Home</button>
+          <div class="session-title" id="sessionTitle">Session</div>
+          <div class="session-meta" id="sessionMeta">Agent</div>
+        </header>
+        <div class="session-stream" id="sessionStream"></div>
+        <div class="session-compose">
+          <textarea id="sessionInput" rows="2" placeholder="Continue…"></textarea>
+          <button class="send-btn" type="button" id="sessionSendBtn">Send</button>
+        </div>
+      </section>
+
+      <!-- Search -->
+      <section class="view panel-view" id="view-search" data-view="search">
+        <h2>Search</h2>
+        <p class="panel-note">Prototype — filters local UI only.</p>
+        <input class="field-input" type="search" id="searchInput" placeholder="Search projects, threads…" autocomplete="off" />
+        <ul class="result-list" id="searchResults"></ul>
+      </section>
+
+      <!-- Workspace -->
+      <section class="view panel-view" id="view-workspace" data-view="workspace">
+        <h2>Workspace</h2>
+        <p class="panel-note">Current local workspace (prototype).</p>
+        <dl class="kv" id="workspaceKv"></dl>
+      </section>
+
+      <!-- Providers -->
+      <section class="view panel-view" id="view-providers" data-view="providers">
+        <div class="panel-head">
+          <div>
+            <h2>Providers</h2>
+            <p class="panel-note">BYOK · configs stay in memory · no real API calls</p>
+          </div>
+          <button class="send-btn" type="button" id="addProviderBtn">Add Provider</button>
+        </div>
+
+        <ul class="result-list" id="providerList"></ul>
+
+        <form class="provider-form" id="providerForm" hidden onsubmit="return false;">
+          <div class="panel-head">
+            <h3 id="providerFormTitle">Add Provider</h3>
+            <button class="text-btn" type="button" id="cancelProviderBtn">Cancel</button>
+          </div>
+
+          <div class="preset-row" id="presetRow"></div>
+
+          <label><span>提供商名称</span>
+            <input class="field-input" id="provName" type="text" placeholder="e.g. My Provider" autocomplete="off" /></label>
+          <label><span>备注</span>
+            <input class="field-input" id="provNotes" type="text" autocomplete="off" /></label>
+          <label><span>官网链接</span>
+            <input class="field-input" id="provSite" type="url" placeholder="https://" autocomplete="off" /></label>
+          <label><span>API Key</span>
+            <div class="key-row">
+              <input class="field-input" id="provKey" type="password" placeholder="sk-…" autocomplete="off" />
+              <button class="btn-secondary" type="button" id="toggleKeyBtn">Show</button>
+            </div></label>
+          <label><span>请求地址 <em class="req">必填</em></span>
+            <input class="field-input" id="provUrl" type="url" placeholder="https://api.example.com/v1" autocomplete="off" /></label>
+          <label><span>API 格式</span>
+            <select class="field-input" id="provFormat">
+              <option value="openai">OpenAI-compatible</option>
+              <option value="anthropic">Anthropic</option>
+              <option value="custom">Custom</option>
+            </select></label>
+
+          <div class="model-grid">
+            <label><span>主模型</span><input class="field-input" id="provModel" type="text" autocomplete="off" /></label>
+            <label><span>Haiku 默认模型</span><input class="field-input" id="provHaiku" type="text" autocomplete="off" /></label>
+            <label><span>Sonnet 默认模型</span><input class="field-input" id="provSonnet" type="text" autocomplete="off" /></label>
+            <label><span>Opus 默认模型</span><input class="field-input" id="provOpus" type="text" autocomplete="off" /></label>
+          </div>
+
+          <div class="form-actions">
+            <button class="send-btn" type="button" id="saveProviderBtn">Save Provider</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Settings -->
+      <section class="view panel-view" id="view-settings" data-view="settings">
+        <h2>Settings</h2>
+        <p class="panel-note">Values stay in memory only.</p>
+        <form class="settings-form" id="settingsForm" onsubmit="return false;">
+          <label>
+            <span>Base URL</span>
+            <input class="field-input" id="setBaseUrl" type="text" value="https://api.example.com/v1" />
+          </label>
+          <label>
+            <span>API Key</span>
+            <input class="field-input" id="setApiKey" type="password" value="sk-prototype" />
+          </label>
+          <label>
+            <span>Default Model</span>
+            <input class="field-input" id="setModel" type="text" value="gpt-5" />
+          </label>
+          <button class="send-btn" type="button" id="saveSettingsBtn">Save</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
